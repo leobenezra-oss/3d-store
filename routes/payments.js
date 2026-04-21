@@ -3,9 +3,14 @@ const router = express.Router();
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const products = {
-  'hexagon-twist':     { name: 'Fidget Hexagon Twist',     amount: 699,  currency: 'gbp' },
-  'spiral-cone':       { name: 'Spiral Fidget Cone',        amount: 799,  currency: 'gbp' },
-  'giant-spiral-cone': { name: 'Giant Spiral Fidget Cone',  amount: 1099, currency: 'gbp' },
+  'hexagon-twist':     { name: 'Fidget Hexagon Twist',    amount: 699,  currency: 'gbp' },
+  'spiral-cone':       { name: 'Spiral Fidget Cone',       amount: 799,  currency: 'gbp' },
+  'giant-spiral-cone': { name: 'Giant Spiral Fidget Cone', amount: 1099, currency: 'gbp' },
+  'mesh-fidget':       { name: 'Mesh Fidget',              amount: 899,  currency: 'gbp' },
+  'infinity-cube':     { name: 'Infinity Cube',            amount: 999,  currency: 'gbp' },
+  'octopus-fidget':    { name: 'Octopus Fidget',           amount: 1199, currency: 'gbp' },
+  'flex-slug':         { name: 'Flex Slug',                amount: 899,  currency: 'gbp' },
+  'spinner-rings':     { name: 'Fidget Spinner Rings',     amount: 699,  currency: 'gbp' },
 };
 
 router.get('/checkout', async (req, res) => {
