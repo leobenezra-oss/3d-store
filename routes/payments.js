@@ -3,9 +3,9 @@ const router = express.Router();
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const products = {
-  'product-one':   { name: 'Product One',   amount: 999,  currency: 'gbp' },
-  'product-two':   { name: 'Product Two',   amount: 1499, currency: 'gbp' },
-  'product-three': { name: 'Product Three', amount: 1999, currency: 'gbp' },
+  'hexagon-twist':     { name: 'Fidget Hexagon Twist',     amount: 699,  currency: 'gbp' },
+  'spiral-cone':       { name: 'Spiral Fidget Cone',        amount: 799,  currency: 'gbp' },
+  'giant-spiral-cone': { name: 'Giant Spiral Fidget Cone',  amount: 1099, currency: 'gbp' },
 };
 
 router.get('/checkout', async (req, res) => {
@@ -42,7 +42,7 @@ router.get('/success', (req, res) => {
         <div>
           <h1 style="font-size:2.5rem;margin-bottom:1rem;">🎉 Order confirmed!</h1>
           <p style="color:#aaa;margin-bottom:2rem;">Thanks for your purchase. We'll get it printed and shipped soon.</p>
-          <a href="/" style="background:#fff;color:#000;padding:0.8rem 2rem;border-radius:8px;text-decoration:none;font-weight:600;">Back to store</a>
+          <a href="/" style="background:#a78bfa;color:#000;padding:0.8rem 2rem;border-radius:8px;text-decoration:none;font-weight:700;">Back to store</a>
         </div>
       </body>
     </html>
