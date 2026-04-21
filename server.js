@@ -33,6 +33,12 @@ app.use('/auth', authRoutes);
 app.use('/products', productRoutes);
 app.use('/payments', paymentRoutes);
 
+const contactRoutes = require('./routes/contact');
+const reviewRoutes = require('./routes/reviews');
+
+app.use('/contact', contactRoutes);
+app.use('/reviews', reviewRoutes);
+
 // Shortcuts
 app.get('/login', (req, res) => res.redirect('/auth/login'));
 app.get('/register', (req, res) => res.redirect('/auth/register'));
