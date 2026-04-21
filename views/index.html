@@ -61,14 +61,13 @@
     .card-img {
       width: 100%;
       height: 220px;
-      background: linear-gradient(135deg, #1e1030, #2a1a40);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #555;
-      font-size: 0.9rem;
+      overflow: hidden;
     }
-    .card-img .icon { font-size: 3rem; margin-bottom: 0.5rem; display: block; }
+    .card-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
     .card-body { padding: 1.2rem; }
     .card-body h3 { font-size: 1.05rem; margin-bottom: 0.4rem; font-weight: 700; }
     .card-body p { color: #888; font-size: 0.85rem; margin-bottom: 1rem; line-height: 1.5; }
@@ -139,10 +138,7 @@
 
       <div class="card">
         <div class="card-img">
-          <div style="text-align:center">
-            <span class="icon">🔷</span>
-            <div>Photo coming soon</div>
-          </div>
+          <img src="/Spiral-fidget.jpg" alt="Fidget Hexagon Twist">
         </div>
         <div class="card-body">
           <h3>Fidget Hexagon Twist</h3>
@@ -156,10 +152,7 @@
 
       <div class="card">
         <div class="card-img">
-          <div style="text-align:center">
-            <span class="icon">🌀</span>
-            <div>Photo coming soon</div>
-          </div>
+          <img src="/Spiral.png" alt="Spiral Fidget Cone">
         </div>
         <div class="card-body">
           <h3>Spiral Fidget Cone</h3>
@@ -173,10 +166,7 @@
 
       <div class="card">
         <div class="card-img">
-          <div style="text-align:center">
-            <span class="icon">🌪️</span>
-            <div>Photo coming soon</div>
-          </div>
+          <img src="/Giant-Spiral.png" alt="Giant Spiral Fidget Cone">
         </div>
         <div class="card-body">
           <h3>Giant Spiral Fidget Cone</h3>
