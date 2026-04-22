@@ -42,7 +42,7 @@ router.post('/register', async (req, res) => {
     await pool.query('INSERT INTO users (email, password) VALUES ($1, $2)', [email, hashed]);
     res.redirect('/login');
   } catch (err) {
-    res.send('Email already registered. <a href="/register">Try again</a>');
+    res.redirect('/register?error=exists');
   }
 });
 
@@ -52,7 +52,7 @@ router.get('/login', (req, res) => {
 
 router.post('/login', passport.authenticate('local', {
   successRedirect: '/',
-  failureRedirect: '/login'
+  failureRedirect: '/login?error=true'
 }));
 
 router.get('/logout', (req, res) => {

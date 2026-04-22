@@ -40,7 +40,13 @@ router.get('/checkout', async (req, res) => {
   }
 });
 
-router.get('/success', (req, res) => {
+const pool = require('../db');
+
+router.get('/success', async (req, res) => {
+  // Clear cart after successful payment
+  if (req.query.user) {
+    await pool.query('DELETE FROM cart_items WHERE user_id = $1', [req.query.user]).catch(() => {});
+  }
   res.send(`
     <html>
       <body style="font-family:sans-serif;background:#0f0f0f;color:#fff;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;text-align:center;">

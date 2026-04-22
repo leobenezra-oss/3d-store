@@ -35,9 +35,11 @@ app.use('/payments', paymentRoutes);
 
 const contactRoutes = require('./routes/contact');
 const reviewRoutes = require('./routes/reviews');
+const cartRoutes = require('./routes/cart');
 
 app.use('/contact', contactRoutes);
 app.use('/reviews', reviewRoutes);
+app.use('/cart', cartRoutes);
 
 // Shortcuts
 app.get('/login', (req, res) => res.redirect('/auth/login'));
