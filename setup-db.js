@@ -5,9 +5,8 @@ async function setup() {
   await pool.query(`
     CREATE TABLE IF NOT EXISTS users (
       id SERIAL PRIMARY KEY,
+      firebase_uid TEXT UNIQUE NOT NULL,
       email TEXT UNIQUE NOT NULL,
-      password TEXT,
-      google_id TEXT,
       created_at TIMESTAMP DEFAULT NOW()
     );
 
