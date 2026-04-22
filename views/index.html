@@ -6,81 +6,101 @@
   <title>Fidget3D</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Segoe UI', sans-serif; background: #0f0f0f; color: #fff; }
+    body { font-family: 'Segoe UI', sans-serif; background: #fff; color: #111; }
 
-    nav { display: flex; justify-content: space-between; align-items: center; padding: 1.2rem 2rem; border-bottom: 1px solid #1e1e1e; position: sticky; top: 0; background: #0f0f0f; z-index: 100; }
-    nav .logo img { height: 56px; width: auto; display: block; }
-    nav .nav-links a { color: #aaa; text-decoration: none; margin-left: 1.5rem; font-size: 0.95rem; }
-    nav .nav-links a:hover { color: #fff; }
-    .cart-icon { background: none; border: 1px solid #2a2a2a; color: #fff; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; font-size: 0.95rem; display: flex; align-items: center; gap: 0.5rem; transition: border-color 0.2s; margin-left: 1.5rem; }
-    .cart-icon:hover { border-color: #a78bfa; }
-    .cart-badge { background: #a78bfa; color: #000; border-radius: 999px; font-size: 0.75rem; font-weight: 800; padding: 0.1rem 0.45rem; display: none; }
+    /* NAV */
+    nav { display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; border-bottom: 1px solid #e5e5e5; position: sticky; top: 0; background: #fff; z-index: 100; }
+    nav .logo img { height: 48px; width: auto; display: block; }
+    .nav-right { display: flex; align-items: center; gap: 0.25rem; }
+    .nav-links a { color: #555; text-decoration: none; margin-left: 1.25rem; font-size: 0.95rem; }
+    .nav-links a:hover { color: #111; }
+    .nav-login { background: none; border: 1.5px solid #ddd; color: #111; padding: 0.45rem 1.1rem; border-radius: 8px; cursor: pointer; font-size: 0.9rem; font-family: inherit; font-weight: 600; transition: border-color 0.2s, color 0.2s; margin-left: 1rem; text-decoration: none; display: inline-block; }
+    .nav-login:hover { border-color: #7c3aed; color: #7c3aed; }
+    .nav-user { font-size: 0.85rem; color: #555; margin-left: 1rem; display: none; align-items: center; gap: 0.75rem; }
+    .nav-user-email { font-weight: 600; color: #111; }
+    .nav-logout { background: none; border: none; color: #7c3aed; cursor: pointer; font-size: 0.85rem; font-family: inherit; font-weight: 600; padding: 0; }
+    .nav-logout:hover { text-decoration: underline; }
+    .cart-btn { background: none; border: 1.5px solid #ddd; color: #111; padding: 0.45rem 1rem; border-radius: 8px; cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; gap: 0.4rem; transition: border-color 0.2s; margin-left: 0.5rem; }
+    .cart-btn:hover { border-color: #7c3aed; }
+    .cart-badge { background: #7c3aed; color: #fff; border-radius: 999px; font-size: 0.72rem; font-weight: 800; padding: 0.1rem 0.4rem; display: none; }
 
-    .hero { text-align: center; padding: 5rem 2rem 3rem; background: radial-gradient(ellipse at top, #1a0a2e 0%, #0f0f0f 70%); }
-    .hero-logo { height: 320px; width: auto; margin: 0 auto 2rem; display: block; }
-    .hero p { color: #aaa; font-size: 1.1rem; max-width: 500px; margin: 0 auto 2rem; }
-    .hero a { background: #a78bfa; color: #000; padding: 0.8rem 2rem; border-radius: 8px; font-weight: 700; text-decoration: none; font-size: 1rem; }
-    .hero a:hover { background: #c4b5fd; }
+    /* HERO */
+    .hero { text-align: center; padding: 4rem 2rem 3rem; background: #faf8ff; border-bottom: 1px solid #ede9fe; }
+    .hero-logo { height: 260px; width: auto; margin: 0 auto 1.75rem; display: block; }
+    .hero p { color: #666; font-size: 1.05rem; max-width: 480px; margin: 0 auto 2rem; line-height: 1.6; }
+    .hero-cta { display: inline-flex; gap: 0.75rem; flex-wrap: wrap; justify-content: center; }
+    .btn-primary { background: #7c3aed; color: #fff; padding: 0.8rem 2rem; border-radius: 8px; font-weight: 700; text-decoration: none; font-size: 1rem; transition: background 0.2s; display: inline-block; }
+    .btn-primary:hover { background: #6d28d9; }
+    .btn-secondary { background: #fff; color: #7c3aed; padding: 0.8rem 2rem; border-radius: 8px; font-weight: 700; text-decoration: none; font-size: 1rem; border: 1.5px solid #a78bfa; transition: border-color 0.2s, background 0.2s; display: inline-block; }
+    .btn-secondary:hover { background: #faf5ff; border-color: #7c3aed; }
 
-    .trust { text-align: center; padding: 1.5rem 2rem; color: #666; font-size: 0.85rem; border-bottom: 1px solid #1e1e1e; }
-    .trust span { margin: 0 1rem; }
+    /* TRUST BAR */
+    .trust { text-align: center; padding: 1.2rem 2rem; color: #999; font-size: 0.85rem; border-bottom: 1px solid #f0f0f0; }
+    .trust span { margin: 0 0.75rem; }
 
+    /* PRODUCTS */
     .products { padding: 3rem 2rem; max-width: 1200px; margin: 0 auto; }
-    .products h2 { font-size: 1.5rem; margin-bottom: 2rem; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 1.5rem; }
-    .card { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 12px; overflow: hidden; transition: border-color 0.2s, transform 0.2s; }
-    .card:hover { border-color: #a78bfa; transform: translateY(-3px); }
-    .card-img { width: 100%; height: 220px; overflow: hidden; }
+    .products h2 { font-size: 1.4rem; margin-bottom: 2rem; color: #111; font-weight: 700; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.5rem; }
+    .card { background: #fff; border: 1px solid #e8e8e8; border-radius: 12px; overflow: hidden; transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s; }
+    .card:hover { border-color: #a78bfa; box-shadow: 0 4px 20px rgba(124,58,237,0.08); transform: translateY(-2px); }
+    .card-img { width: 100%; height: 210px; overflow: hidden; background: #f9f9f9; }
     .card-img img { width: 100%; height: 100%; object-fit: cover; }
     .card-body { padding: 1.2rem; }
-    .card-body h3 { font-size: 1.05rem; margin-bottom: 0.4rem; font-weight: 700; }
-    .card-body p { color: #888; font-size: 0.85rem; margin-bottom: 1rem; line-height: 1.5; }
+    .card-body h3 { font-size: 1rem; margin-bottom: 0.35rem; font-weight: 700; color: #111; }
+    .card-body p { color: #777; font-size: 0.85rem; margin-bottom: 1rem; line-height: 1.5; }
     .card-footer { display: flex; justify-content: space-between; align-items: center; }
-    .price { font-size: 1.2rem; font-weight: 800; color: #a78bfa; }
-    .btn-cart { background: #a78bfa; color: #000; border: none; padding: 0.55rem 1.2rem; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 0.9rem; transition: background 0.2s; }
-    .btn-cart:hover { background: #c4b5fd; }
-    .btn-cart.added { background: #22c55e; color: #fff; }
+    .price { font-size: 1.15rem; font-weight: 800; color: #7c3aed; }
+    .btn-cart { background: #7c3aed; color: #fff; border: none; padding: 0.5rem 1.1rem; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 0.88rem; transition: background 0.2s; }
+    .btn-cart:hover { background: #6d28d9; }
+    .btn-cart.added { background: #16a34a; }
 
-    /* Cart Drawer */
-    .drawer-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 200; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+    /* CART DRAWER */
+    .drawer-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.25); z-index: 200; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
     .drawer-overlay.open { opacity: 1; pointer-events: all; }
-    .drawer { position: fixed; top: 0; right: 0; width: 380px; max-width: 100vw; height: 100vh; background: #141414; border-left: 1px solid #2a2a2a; z-index: 201; display: flex; flex-direction: column; transform: translateX(100%); transition: transform 0.3s ease; }
+    .drawer { position: fixed; top: 0; right: 0; width: 380px; max-width: 100vw; height: 100vh; background: #fff; border-left: 1px solid #e5e5e5; z-index: 201; display: flex; flex-direction: column; transform: translateX(100%); transition: transform 0.3s ease; box-shadow: -4px 0 24px rgba(0,0,0,0.07); }
     .drawer.open { transform: translateX(0); }
-    .drawer-header { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; border-bottom: 1px solid #2a2a2a; }
-    .drawer-header h2 { font-size: 1.1rem; font-weight: 700; }
-    .drawer-close { background: none; border: none; color: #aaa; font-size: 1.4rem; cursor: pointer; line-height: 1; }
-    .drawer-close:hover { color: #fff; }
+    .drawer-header { display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 1.5rem; border-bottom: 1px solid #f0f0f0; }
+    .drawer-header h2 { font-size: 1.05rem; font-weight: 700; color: #111; }
+    .drawer-close { background: none; border: none; color: #bbb; font-size: 1.3rem; cursor: pointer; }
+    .drawer-close:hover { color: #111; }
     .drawer-items { flex: 1; overflow-y: auto; padding: 1rem; }
-    .drawer-empty { text-align: center; color: #555; padding: 3rem 1rem; font-size: 0.95rem; }
-    .drawer-item { display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 10px; margin-bottom: 0.75rem; }
-    .drawer-item-info { flex: 1; }
-    .drawer-item-name { font-size: 0.9rem; font-weight: 600; margin-bottom: 0.25rem; }
-    .drawer-item-price { font-size: 0.85rem; color: #a78bfa; }
-    .drawer-item-controls { display: flex; align-items: center; gap: 0.5rem; }
-    .qty-btn { background: #2a2a2a; border: none; color: #fff; width: 28px; height: 28px; border-radius: 6px; cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
-    .qty-btn:hover { background: #3a3a3a; }
-    .qty-num { font-size: 0.9rem; min-width: 20px; text-align: center; }
-    .drawer-footer { padding: 1.25rem; border-top: 1px solid #2a2a2a; }
+    .drawer-empty { text-align: center; color: #bbb; padding: 3rem 1rem; font-size: 0.95rem; }
+    .drawer-item { display: flex; justify-content: space-between; align-items: center; padding: 0.9rem 1rem; background: #fafafa; border: 1px solid #f0f0f0; border-radius: 10px; margin-bottom: 0.65rem; }
+    .drawer-item-name { font-size: 0.9rem; font-weight: 600; margin-bottom: 0.2rem; color: #111; }
+    .drawer-item-price { font-size: 0.82rem; color: #7c3aed; }
+    .drawer-item-controls { display: flex; align-items: center; gap: 0.4rem; }
+    .qty-btn { background: #f0f0f0; border: none; color: #111; width: 26px; height: 26px; border-radius: 6px; cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
+    .qty-btn:hover { background: #e0d4fc; }
+    .qty-num { font-size: 0.9rem; min-width: 20px; text-align: center; font-weight: 600; }
+    .drawer-footer { padding: 1.25rem 1.5rem; border-top: 1px solid #f0f0f0; }
     .drawer-total { display: flex; justify-content: space-between; font-size: 1rem; font-weight: 700; margin-bottom: 1rem; }
-    .drawer-total span:last-child { color: #a78bfa; }
-    .btn-checkout { width: 100%; padding: 0.85rem; background: #a78bfa; color: #000; border: none; border-radius: 8px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: background 0.2s; }
-    .btn-checkout:hover { background: #c4b5fd; }
+    .drawer-total span:last-child { color: #7c3aed; }
+    .btn-checkout { width: 100%; padding: 0.85rem; background: #7c3aed; color: #fff; border: none; border-radius: 8px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: background 0.2s; }
+    .btn-checkout:hover { background: #6d28d9; }
     .btn-checkout:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    footer { text-align: center; padding: 2rem; color: #555; font-size: 0.85rem; border-top: 1px solid #1e1e1e; margin-top: 2rem; }
+    footer { text-align: center; padding: 2rem; color: #bbb; font-size: 0.85rem; border-top: 1px solid #f0f0f0; margin-top: 2rem; }
   </style>
 </head>
 <body>
 
 <nav>
   <a href="/" class="logo"><img src="/SmallLogo-removebg-preview.png" alt="Fidget3D"></a>
-  <div style="display:flex;align-items:center;">
+  <div class="nav-right">
     <div class="nav-links">
       <a href="#products">Shop</a>
       <a href="/reviews">Reviews</a>
       <a href="/contact">Contact</a>
     </div>
-    <button class="cart-icon" onclick="openCart()">
+    <!-- Shown when logged out -->
+    <a href="/login" class="nav-login" id="nav-login-btn">Log in</a>
+    <!-- Shown when logged in -->
+    <div class="nav-user" id="nav-user">
+      <span class="nav-user-email" id="nav-email"></span>
+      <button class="nav-logout" onclick="logout()">Log out</button>
+    </div>
+    <button class="cart-btn" onclick="openCart()">
       🛒 Cart <span class="cart-badge" id="cart-badge">0</span>
     </button>
   </div>
@@ -89,7 +109,10 @@
 <div class="hero">
   <img src="/BigLogo-removebg-preview.png" alt="Fidget3D" class="hero-logo">
   <p>Hand-picked 3D printed fidget toys, made to order and shipped straight to your door.</p>
-  <a href="#products">Shop Now</a>
+  <div class="hero-cta">
+    <a href="#products" class="btn-primary">Shop Now</a>
+    <a href="/login" class="btn-secondary" id="hero-auth-btn">Create Account</a>
+  </div>
 </div>
 
 <div class="trust">
@@ -223,13 +246,54 @@
 
 <footer>&copy; 2026 Fidget3D. All rights reserved.</footer>
 
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+  import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCm5B5JqR7dee8y8DbLAU_5xRgsZCjpGFs",
+    authDomain: "fidget3d-5f9e4.firebaseapp.com",
+    projectId: "fidget3d-5f9e4",
+    storageBucket: "fidget3d-5f9e4.firebasestorage.app",
+    messagingSenderId: "950659286370",
+    appId: "1:950659286370:web:295446d048630d9483583b"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  onAuthStateChanged(auth, (user) => {
+    const loginBtn = document.getElementById('nav-login-btn');
+    const userEl = document.getElementById('nav-user');
+    const emailEl = document.getElementById('nav-email');
+    const heroBtn = document.getElementById('hero-auth-btn');
+
+    if (user) {
+      loginBtn.style.display = 'none';
+      userEl.style.display = 'flex';
+      emailEl.textContent = user.email;
+      heroBtn.style.display = 'none';
+    } else {
+      loginBtn.style.display = 'inline-block';
+      userEl.style.display = 'none';
+      heroBtn.style.display = 'inline-block';
+    }
+  });
+
+  window.logout = async function() {
+    await signOut(auth);
+    await fetch('/auth/logout', { method: 'POST' });
+    window.location.reload();
+  };
+</script>
+
 <script>
   let cart = [];
 
   async function loadCart() {
     try {
       const res = await fetch('/cart', { headers: { 'Accept': 'application/json' } });
-      if (res.status === 401) return; // not logged in, skip silently
+      if (res.status === 401) return;
       cart = await res.json();
       updateBadge();
     } catch {}
