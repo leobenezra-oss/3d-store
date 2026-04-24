@@ -6,68 +6,63 @@
   <title>Contact — Fidget3D</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Segoe UI', sans-serif; background: #0f0f0f; color: #fff; min-height: 100vh; }
-    nav {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 1.2rem 2rem; border-bottom: 1px solid #1e1e1e;
-    }
-    nav .logo { font-size: 1.3rem; font-weight: 800; letter-spacing: 2px; text-decoration: none; color: #fff; }
-    nav .logo span { color: #a78bfa; }
-    nav a { color: #aaa; text-decoration: none; margin-left: 1.5rem; font-size: 0.95rem; }
-    nav a:hover { color: #fff; }
-    .container {
-      max-width: 600px; margin: 4rem auto; padding: 0 2rem;
-    }
-    h1 { font-size: 2rem; margin-bottom: 0.5rem; }
-    .subtitle { color: #888; margin-bottom: 2rem; }
-    .success {
-      background: #1a2e1a; border: 1px solid #2a4a2a; border-radius: 8px;
-      padding: 1rem 1.2rem; margin-bottom: 1.5rem; color: #6fcf6f;
-    }
-    .error-msg {
-      background: #2e1a1a; border: 1px solid #4a2a2a; border-radius: 8px;
-      padding: 1rem 1.2rem; margin-bottom: 1.5rem; color: #cf6f6f;
-    }
-    .card {
-      background: #1a1a1a; border: 1px solid #2a2a2a;
-      border-radius: 12px; padding: 2rem;
-    }
-    label { display: block; margin-bottom: 0.4rem; font-size: 0.9rem; color: #aaa; }
-    input, textarea {
-      width: 100%; padding: 0.75rem 1rem; margin-bottom: 1.2rem;
-      background: #0f0f0f; border: 1px solid #2a2a2a;
-      border-radius: 8px; color: #fff; font-size: 1rem; font-family: inherit;
-    }
+    body { font-family: 'Segoe UI', sans-serif; background: #fff; color: #111; min-height: 100vh; }
+
+    nav { display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; border-bottom: 1px solid #e5e5e5; position: sticky; top: 0; background: #fff; z-index: 100; }
+    nav .logo img { height: 48px; width: auto; display: block; }
+    .nav-links a { color: #555; text-decoration: none; margin-left: 1.25rem; font-size: 0.95rem; }
+    .nav-links a:hover { color: #111; }
+    .nav-login { background: none; border: 1.5px solid #ddd; color: #111; padding: 0.45rem 1.1rem; border-radius: 8px; cursor: pointer; font-size: 0.9rem; font-family: inherit; font-weight: 600; transition: border-color 0.2s, color 0.2s; margin-left: 1rem; text-decoration: none; display: inline-block; }
+    .nav-login:hover { border-color: #7c3aed; color: #7c3aed; }
+    .nav-user { font-size: 0.85rem; color: #555; margin-left: 1rem; display: none; align-items: center; gap: 0.75rem; }
+    .nav-user-email { font-weight: 600; color: #111; }
+    .nav-logout { background: none; border: none; color: #7c3aed; cursor: pointer; font-size: 0.85rem; font-family: inherit; font-weight: 600; padding: 0; }
+    .nav-logout:hover { text-decoration: underline; }
+
+    .page-header { background: #faf8ff; border-bottom: 1px solid #ede9fe; padding: 3rem 2rem 2.5rem; text-align: center; }
+    .page-header h1 { font-size: 2rem; color: #111; margin-bottom: 0.5rem; }
+    .page-header p { color: #666; font-size: 1rem; }
+
+    .container { max-width: 600px; margin: 3rem auto; padding: 0 2rem; }
+
+    .success { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 1rem 1.2rem; margin-bottom: 1.5rem; color: #16a34a; }
+    .error-msg { background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 1rem 1.2rem; margin-bottom: 1.5rem; color: #dc2626; }
+
+    .card { background: #fff; border: 1px solid #e8e8e8; border-radius: 12px; padding: 2rem; box-shadow: 0 1px 8px rgba(0,0,0,0.04); }
+    label { display: block; margin-bottom: 0.4rem; font-size: 0.9rem; color: #555; font-weight: 600; }
+    input, textarea { width: 100%; padding: 0.75rem 1rem; margin-bottom: 1.2rem; background: #f9f9f9; border: 1.5px solid #e5e5e5; border-radius: 8px; color: #111; font-size: 1rem; font-family: inherit; transition: border-color 0.2s; }
     textarea { height: 140px; resize: vertical; }
-    input:focus, textarea:focus { outline: none; border-color: #a78bfa; }
-    button {
-      width: 100%; padding: 0.8rem; background: #a78bfa; color: #000;
-      border: none; border-radius: 8px; font-size: 1rem;
-      font-weight: 700; cursor: pointer;
-    }
-    button:hover { background: #c4b5fd; }
-    footer {
-      text-align: center; padding: 2rem; color: #555;
-      font-size: 0.85rem; border-top: 1px solid #1e1e1e; margin-top: 4rem;
-    }
+    input:focus, textarea:focus { outline: none; border-color: #7c3aed; background: #fff; }
+    button { width: 100%; padding: 0.8rem; background: #7c3aed; color: #fff; border: none; border-radius: 8px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: background 0.2s; }
+    button:hover { background: #6d28d9; }
+
+    footer { text-align: center; padding: 2rem; color: #bbb; font-size: 0.85rem; border-top: 1px solid #f0f0f0; margin-top: 4rem; }
   </style>
 </head>
 <body>
   <nav>
-    <a href="/" class="logo">Fidget<span>3D</span></a>
-    <div>
-      <a href="/#products">Shop</a>
-      <a href="/reviews">Reviews</a>
-      <a href="/contact">Contact</a>
+    <a href="/" class="logo"><img src="/SmallLogo-removebg-preview.png" alt="Fidget3D"></a>
+    <div style="display:flex;align-items:center;">
+      <div class="nav-links">
+        <a href="/#products">Shop</a>
+        <a href="/reviews">Reviews</a>
+        <a href="/contact">Contact</a>
+      </div>
+      <a href="/login" class="nav-login" id="nav-login-btn">Log in</a>
+      <div class="nav-user" id="nav-user">
+        <span class="nav-user-email" id="nav-email"></span>
+        <button class="nav-logout" onclick="logout()">Log out</button>
+      </div>
     </div>
   </nav>
 
-  <div class="container">
+  <div class="page-header">
     <h1>Get in touch</h1>
-    <p class="subtitle">Questions about an order? Want a custom colour? We'd love to hear from you.</p>
+    <p>Questions about an order? Want a custom colour? We'd love to hear from you.</p>
+  </div>
 
+  <div class="container">
     <div id="msg"></div>
-
     <div class="card">
       <form action="/contact" method="POST">
         <label>Your name</label>
@@ -83,13 +78,28 @@
 
   <footer>&copy; 2026 Fidget3D. All rights reserved.</footer>
 
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+    import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+    const firebaseConfig = { apiKey: "AIzaSyCm5B5JqR7dee8y8DbLAU_5xRgsZCjpGFs", authDomain: "fidget3d-5f9e4.firebaseapp.com", projectId: "fidget3d-5f9e4", storageBucket: "fidget3d-5f9e4.firebasestorage.app", messagingSenderId: "950659286370", appId: "1:950659286370:web:295446d048630d9483583b" };
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    onAuthStateChanged(auth, (user) => {
+      const loginBtn = document.getElementById('nav-login-btn');
+      const userEl = document.getElementById('nav-user');
+      const emailEl = document.getElementById('nav-email');
+      if (user) { loginBtn.style.display = 'none'; userEl.style.display = 'flex'; emailEl.textContent = user.email; }
+      else { loginBtn.style.display = 'inline-block'; userEl.style.display = 'none'; }
+    });
+    window.logout = async function() { await signOut(auth); await fetch('/auth/logout', { method: 'POST' }); window.location.href = '/'; };
+  </script>
   <script>
     const params = new URLSearchParams(window.location.search);
     const msg = document.getElementById('msg');
     if (params.get('sent') === 'true') {
       msg.innerHTML = '<div class="success">✅ Message sent! We\'ll get back to you soon.</div>';
     } else if (params.get('sent') === 'error') {
-      msg.innerHTML = '<div class="error-msg">❌ Something went wrong. Please email us directly at AFidgets3D@gmail.com</div>';
+      msg.innerHTML = '<div class="error-msg">❌ Something went wrong. Please email us directly at Fidgets3D.Business@gmail.com</div>';
     }
   </script>
 </body>

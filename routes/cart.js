@@ -63,31 +63,41 @@ router.post('/remove', async (req, res) => {
 
 // POST /cart/checkout — create Stripe session for all cart items
 router.post('/checkout', async (req, res) => {
-  const result = await pool.query(
-    'SELECT * FROM cart_items WHERE user_id = $1',
-    [req.session.user.id]
-  );
-  const items = result.rows;
-  if (items.length === 0) return res.status(400).json({ error: 'Cart is empty' });
+  try {
+    const result = await pool.query(
+      'SELECT * FROM cart_items WHERE user_id = $1',
+      [req.session.user.id]
+    );
+    const items = result.rows;
+    if (items.length === 0) return res.status(400).json({ error: 'Cart is empty' });
 
-  const line_items = items.map(item => ({
-    price_data: {
-      currency: 'gbp',
-      product_data: { name: item.product_name },
-      unit_amount: item.amount,
-    },
-    quantity: item.quantity,
-  }));
+    const line_items = items.map(item => ({
+      price_data: {
+        currency: 'gbp',
+        product_data: { name: item.product_name },
+        unit_amount: item.amount,
+      },
+      quantity: item.quantity,
+    }));
 
-  const session = await stripe.checkout.sessions.create({
-    payment_method_types: ['card'],
-    line_items,
-    mode: 'payment',
-    success_url: `${process.env.BASE_URL}/payments/success?clear=true&user=${req.session.user.id}`,
-    cancel_url: `${process.env.BASE_URL}/`,
-  });
+    // Use the request origin so it works on any host (localhost or Render)
+    const baseUrl = process.env.BASE_URL && process.env.BASE_URL !== 'http://localhost:3001'
+      ? process.env.BASE_URL
+      : `${req.protocol}://${req.get('host')}`;
 
-  res.json({ url: session.url });
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items,
+      mode: 'payment',
+      success_url: `${baseUrl}/payments/success?clear=true&user=${req.session.user.id}`,
+      cancel_url: `${baseUrl}/`,
+    });
+
+    res.json({ url: session.url });
+  } catch (err) {
+    console.error('Stripe checkout error:', err);
+    res.status(500).json({ error: 'Checkout failed. Please try again.' });
+  }
 });
 
 module.exports = router;
