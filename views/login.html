@@ -71,7 +71,7 @@
 
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
-    import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+    import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
 
     const firebaseConfig = {
       apiKey: "AIzaSyCm5B5JqR7dee8y8DbLAU_5xRgsZCjpGFs",
@@ -93,15 +93,15 @@
       notice.style.display = 'block';
     }
 
-    async function createSession(user) {
+    // FIXED: Create server session after login
+    async function createServerSession(user) {
       const idToken = await user.getIdToken();
       const res = await fetch('/auth/session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ idToken })
       });
-      if (res.ok) window.location.href = '/';
-      else showError('Something went wrong. Please try again.');
+      if (!res.ok) throw new Error('Session creation failed');
     }
 
     function showError(msg) {
@@ -120,7 +120,9 @@
       document.getElementById('spinner').style.display = 'block';
       try {
         const cred = await signInWithEmailAndPassword(auth, email, password);
-        await createSession(cred.user);
+        await createServerSession(cred.user);
+        const redirectTo = params.get('next') || '/';
+        window.location.href = redirectTo;
       } catch (err) {
         showError('Incorrect email or password.');
       }
@@ -130,11 +132,21 @@
       try {
         const provider = new GoogleAuthProvider();
         const cred = await signInWithPopup(auth, provider);
-        await createSession(cred.user);
+        await createServerSession(cred.user);
+        const redirectTo = params.get('next') || '/';
+        window.location.href = redirectTo;
       } catch (err) {
         showError('Google sign-in failed. Please try again.');
       }
     };
+
+    // Redirect if already logged in
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        const redirectTo = params.get('next') || '/';
+        window.location.href = redirectTo;
+      }
+    });
   </script>
 </body>
 </html>

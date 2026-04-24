@@ -1,7 +1,9 @@
 require('dotenv').config();
 const express = require('express');
 const session = require('express-session');
+const pgSession = require('connect-pg-simple')(session);
 const path = require('path');
+const pool = require('./db'); // Your database connection
 
 const app = express();
 
@@ -9,10 +11,22 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// ✅ FIXED: Session with PostgreSQL store
 app.use(session({
-  secret: process.env.SESSION_SECRET,
+  store: new pgSession({
+    pool: pool,              // Your database pool from db.js
+    tableName: 'session',    // Creates this table automatically
+    createTableIfMissing: true
+  }),
+  secret: process.env.SESSION_SECRET || 'change-this-to-a-secret-key',
   resave: false,
-  saveUninitialized: false
+  saveUninitialized: false,
+  cookie: { 
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production', // true only on HTTPS
+    sameSite: 'lax'
+  }
 }));
 
 // Routes
