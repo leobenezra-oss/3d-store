@@ -4,7 +4,6 @@ const admin = require('../firebase-admin');
 const pool = require('../db');
 
 // POST /auth/session — called by frontend after Firebase login
-// Verifies the Firebase ID token and creates a server session
 router.post('/session', async (req, res) => {
   const { idToken } = req.body;
   if (!idToken) return res.status(400).json({ error: 'No token provided' });
@@ -13,7 +12,6 @@ router.post('/session', async (req, res) => {
     const decoded = await admin.auth().verifyIdToken(idToken);
     const { uid, email } = decoded;
 
-    // Upsert user into our DB
     await pool.query(`
       INSERT INTO users (firebase_uid, email)
       VALUES ($1, $2)
@@ -22,9 +20,17 @@ router.post('/session', async (req, res) => {
 
     const result = await pool.query('SELECT * FROM users WHERE firebase_uid = $1', [uid]);
     req.session.user = result.rows[0];
-    res.json({ ok: true });
+
+    // Wait for session to be written to DB before responding
+    req.session.save(err => {
+      if (err) {
+        console.error('Session save error:', err);
+        return res.status(500).json({ error: 'Session save failed' });
+      }
+      res.json({ ok: true });
+    });
   } catch (err) {
-    console.error(err);
+    console.error('Auth session error:', err.message);
     res.status(401).json({ error: 'Invalid token' });
   }
 });
