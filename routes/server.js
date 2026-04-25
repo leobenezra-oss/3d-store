@@ -3,13 +3,13 @@ const express = require('express');
 const session = require('express-session');
 const pgSession = require('connect-pg-simple')(session);
 const path = require('path');
-const pool = require('./db');
+const pool = require('../db');
 
 const app = express();
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, '../public')));
 
 app.use(session({
   store: new pgSession({
@@ -29,28 +29,27 @@ app.use(session({
 }));
 
 // Routes
-app.use('/auth', require('./routes/auth'));
-app.use('/products', require('./routes/products'));
-app.use('/payments', require('./routes/payments'));
-app.use('/contact', require('./routes/contact'));
-app.use('/reviews', require('./routes/reviews'));
-app.use('/cart', require('./routes/cart'));
+app.use('/auth', require('./auth'));
+app.use('/products', require('./products'));
+app.use('/payments', require('./payments'));
+app.use('/contact', require('./contact'));
+app.use('/reviews', require('./reviews'));
+app.use('/cart', require('./cart'));
 
-app.get('/login', (req, res) => res.sendFile(path.join(__dirname, 'views', 'login.html')));
-app.get('/register', (req, res) => res.sendFile(path.join(__dirname, 'views', 'register.html')));
+app.get('/login', (req, res) => res.sendFile(path.join(__dirname, '../views/login.html')));
+app.get('/register', (req, res) => res.sendFile(path.join(__dirname, '../views/register.html')));
 
-// Admin page — server checks session, client checks role
 app.get('/admin', (req, res) => {
   const adminEmails = (process.env.ADMIN_EMAILS || '').split(',').map(e => e.trim().toLowerCase());
   const userEmail = req.session?.user?.email?.toLowerCase();
   if (!userEmail || !adminEmails.includes(userEmail)) {
     return res.redirect('/login');
   }
-  res.sendFile(path.join(__dirname, 'views', 'admin.html'));
+  res.sendFile(path.join(__dirname, '../views/admin.html'));
 });
 
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'views', 'index.html'));
+  res.sendFile(path.join(__dirname, '../views/index.html'));
 });
 
 const PORT = process.env.PORT || 3000;

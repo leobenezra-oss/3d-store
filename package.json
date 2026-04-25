@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "start": "node routes/server.js"
+  },
   "dependencies": {
     "connect-pg-simple": "^10.0.0",
     "dotenv": "^17.4.2",
