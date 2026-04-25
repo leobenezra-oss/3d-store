@@ -45,18 +45,39 @@
     .products { padding: 3rem 2rem; max-width: 1200px; margin: 0 auto; }
     .products h2 { font-size: 1.4rem; margin-bottom: 2rem; color: #111; font-weight: 700; }
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.5rem; }
-    .card { background: #fff; border: 1px solid #e8e8e8; border-radius: 12px; overflow: hidden; transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s; }
+
+    /* PRODUCT CARD */
+    .card { background: #fff; border: 1px solid #e8e8e8; border-radius: 12px; overflow: hidden; transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s; position: relative; }
     .card:hover { border-color: #a78bfa; box-shadow: 0 4px 20px rgba(124,58,237,0.08); transform: translateY(-2px); }
+    .card.out-of-stock { opacity: 0.6; }
     .card-img { width: 100%; height: 210px; overflow: hidden; background: #f9f9f9; }
     .card-img img { width: 100%; height: 100%; object-fit: cover; }
     .card-body { padding: 1.2rem; }
     .card-body h3 { font-size: 1rem; margin-bottom: 0.35rem; font-weight: 700; color: #111; }
-    .card-body p { color: #777; font-size: 0.85rem; margin-bottom: 1rem; line-height: 1.5; }
+    .card-body p { color: #777; font-size: 0.85rem; margin-bottom: 0.75rem; line-height: 1.5; }
+    .stock-badge { font-size: 0.78rem; font-weight: 700; margin-bottom: 0.75rem; display: inline-block; padding: 0.2rem 0.6rem; border-radius: 999px; }
+    .stock-badge.last-one { background: #fef2f2; color: #dc2626; border: 1px solid #fca5a5; }
+    .stock-badge.low-stock { background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa; }
+    .stock-badge.out { background: #f3f4f6; color: #6b7280; border: 1px solid #e5e7eb; }
     .card-footer { display: flex; justify-content: space-between; align-items: center; }
     .price { font-size: 1.15rem; font-weight: 800; color: #7c3aed; }
     .btn-cart { background: #7c3aed; color: #fff; border: none; padding: 0.5rem 1.1rem; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 0.88rem; transition: background 0.2s; }
     .btn-cart:hover { background: #6d28d9; }
     .btn-cart.added { background: #16a34a; }
+    .btn-cart:disabled { background: #d1d5db; color: #9ca3af; cursor: not-allowed; }
+
+    /* SKELETON LOADER */
+    .skeleton { animation: shimmer 1.4s infinite; background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%); background-size: 200% 100%; border-radius: 8px; }
+    @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+    .skel-card { border: 1px solid #e8e8e8; border-radius: 12px; overflow: hidden; }
+    .skel-img { height: 210px; }
+    .skel-body { padding: 1.2rem; }
+    .skel-title { height: 18px; width: 70%; margin-bottom: 0.6rem; }
+    .skel-text { height: 12px; margin-bottom: 0.4rem; }
+    .skel-text:last-child { width: 50%; }
+    .skel-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; }
+    .skel-price { height: 22px; width: 60px; }
+    .skel-btn { height: 34px; width: 100px; border-radius: 6px; }
 
     /* CART DRAWER */
     .drawer-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.25); z-index: 200; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
@@ -96,9 +117,7 @@
       <a href="/reviews">Reviews</a>
       <a href="/contact">Contact</a>
     </div>
-    <!-- Shown when logged out -->
     <a href="/login" class="nav-login" id="nav-login-btn">Log in</a>
-    <!-- Shown when logged in -->
     <div class="nav-user" id="nav-user">
       <span class="nav-user-email" id="nav-email"></span>
       <button class="nav-logout" onclick="logout()">Log out</button>
@@ -127,104 +146,12 @@
 
 <div class="products" id="products">
   <h2>Our Products</h2>
-  <div class="grid">
-
-    <div class="card">
-      <div class="card-img"><img src="/Spiral-fidget.jpg" alt="Fidget Hexagon Twist"></div>
-      <div class="card-body">
-        <h3>Fidget Hexagon Twist</h3>
-        <p>A satisfying interlocking hexagon you can twist and spin endlessly. Compact and pocket-friendly.</p>
-        <div class="card-footer">
-          <span class="price">£6.99</span>
-          <button class="btn-cart" onclick="addToCart(this, 'hexagon-twist', 'Fidget Hexagon Twist', 699)">Add to Cart</button>
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-img"><img src="/Spiral.png" alt="Spiral Fidget Cone"></div>
-      <div class="card-body">
-        <h3>Spiral Fidget Cone</h3>
-        <p>A mesmerising spiral cone that collapses and expands with a smooth, satisfying click.</p>
-        <div class="card-footer">
-          <span class="price">£7.99</span>
-          <button class="btn-cart" onclick="addToCart(this, 'spiral-cone', 'Spiral Fidget Cone', 799)">Add to Cart</button>
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-img"><img src="/Giant-Spiral.png" alt="Giant Spiral Fidget Cone"></div>
-      <div class="card-body">
-        <h3>Giant Spiral Fidget Cone</h3>
-        <p>The big brother of the Spiral Cone — more layers, more satisfying, more impressive.</p>
-        <div class="card-footer">
-          <span class="price">£10.99</span>
-          <button class="btn-cart" onclick="addToCart(this, 'giant-spiral-cone', 'Giant Spiral Fidget Cone', 1099)">Add to Cart</button>
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-img"><img src="/Mesh.png" alt="Mesh Fidget"></div>
-      <div class="card-body">
-        <h3>Mesh Fidget</h3>
-        <p>A tactile mesh structure that flexes and snaps back — oddly satisfying to squeeze and twist.</p>
-        <div class="card-footer">
-          <span class="price">£8.99</span>
-          <button class="btn-cart" onclick="addToCart(this, 'mesh-fidget', 'Mesh Fidget', 899)">Add to Cart</button>
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-img"><img src="/Infinity.png" alt="Infinity Cube"></div>
-      <div class="card-body">
-        <h3>Infinity Cube</h3>
-        <p>The classic infinity cube — folds and flips in every direction. Impossible to put down.</p>
-        <div class="card-footer">
-          <span class="price">£9.99</span>
-          <button class="btn-cart" onclick="addToCart(this, 'infinity-cube', 'Infinity Cube', 999)">Add to Cart</button>
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-img"><img src="/Octopus.jpg" alt="Octopus Fidget"></div>
-      <div class="card-body">
-        <h3>Octopus Fidget</h3>
-        <p>Wiggly, flexible tentacles that are weirdly therapeutic. A crowd favourite and great gift.</p>
-        <div class="card-footer">
-          <span class="price">£11.99</span>
-          <button class="btn-cart" onclick="addToCart(this, 'octopus-fidget', 'Octopus Fidget', 1199)">Add to Cart</button>
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-img"><img src="/Slug.png" alt="Flex Slug"></div>
-      <div class="card-body">
-        <h3>Flex Slug</h3>
-        <p>A segmented slug that ripples and bends in your hand. Strangely calming to fidget with.</p>
-        <div class="card-footer">
-          <span class="price">£8.99</span>
-          <button class="btn-cart" onclick="addToCart(this, 'flex-slug', 'Flex Slug', 899)">Add to Cart</button>
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-img"><img src="/Ring.png" alt="Fidget Spinner Rings"></div>
-      <div class="card-body">
-        <h3>Fidget Spinner Rings</h3>
-        <p>Spin them on your fingers, stack them, fidget with them anywhere. Small, light, addictive.</p>
-        <div class="card-footer">
-          <span class="price">£6.99</span>
-          <button class="btn-cart" onclick="addToCart(this, 'spinner-rings', 'Fidget Spinner Rings', 699)">Add to Cart</button>
-        </div>
-      </div>
-    </div>
-
+  <div class="grid" id="product-grid">
+    <!-- skeleton placeholders while loading -->
+    <div class="skel-card" id="skel1"><div class="skel-img skeleton"></div><div class="skel-body"><div class="skel-title skeleton"></div><div class="skel-text skeleton"></div><div class="skel-text skeleton"></div><div class="skel-footer"><div class="skel-price skeleton"></div><div class="skel-btn skeleton"></div></div></div></div>
+    <div class="skel-card" id="skel2"><div class="skel-img skeleton"></div><div class="skel-body"><div class="skel-title skeleton"></div><div class="skel-text skeleton"></div><div class="skel-text skeleton"></div><div class="skel-footer"><div class="skel-price skeleton"></div><div class="skel-btn skeleton"></div></div></div></div>
+    <div class="skel-card" id="skel3"><div class="skel-img skeleton"></div><div class="skel-body"><div class="skel-title skeleton"></div><div class="skel-text skeleton"></div><div class="skel-text skeleton"></div><div class="skel-footer"><div class="skel-price skeleton"></div><div class="skel-btn skeleton"></div></div></div></div>
+    <div class="skel-card" id="skel4"><div class="skel-img skeleton"></div><div class="skel-body"><div class="skel-title skeleton"></div><div class="skel-text skeleton"></div><div class="skel-text skeleton"></div><div class="skel-footer"><div class="skel-price skeleton"></div><div class="skel-btn skeleton"></div></div></div></div>
   </div>
 </div>
 
@@ -295,7 +222,69 @@
 
 <script>
   let cart = [];
+  let allProducts = [];
 
+  // ── stock badge HTML ──────────────────────────────────────────────────────────
+  function stockBadge(p) {
+    if (!p.in_stock || p.stock === 0) {
+      return '<span class="stock-badge out">Out of stock</span>';
+    }
+    if (p.stock === 1) {
+      return '<span class="stock-badge last-one">🔴 Last one!</span>';
+    }
+    if (p.stock <= 3) {
+      return '<span class="stock-badge low-stock">Only ' + p.stock + ' left</span>';
+    }
+    return '';
+  }
+
+  // ── render product grid ───────────────────────────────────────────────────────
+  function renderProducts(products) {
+    const grid = document.getElementById('product-grid');
+    if (!products.length) {
+      grid.innerHTML = '<p style="color:#999;padding:2rem 0;">No products available right now.</p>';
+      return;
+    }
+    grid.innerHTML = products.map(p => {
+      const outOfStock = !p.in_stock || p.stock === 0;
+      const badge = stockBadge(p);
+      const price = '£' + (p.price_pence / 100).toFixed(2);
+      return `
+        <div class="card${outOfStock ? ' out-of-stock' : ''}">
+          <div class="card-img">
+            <img src="${p.image}" alt="${p.name}" onerror="this.style.display='none'">
+          </div>
+          <div class="card-body">
+            <h3>${p.name}</h3>
+            <p>${p.description}</p>
+            ${badge}
+            <div class="card-footer">
+              <span class="price">${price}</span>
+              <button class="btn-cart"
+                onclick="addToCart(this, '${p.key}', '${p.name.replace(/'/g,"\\'")}', ${p.price_pence})"
+                ${outOfStock ? 'disabled' : ''}>
+                ${outOfStock ? 'Out of stock' : 'Add to Cart'}
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // ── load products from server ─────────────────────────────────────────────────
+  async function loadProducts() {
+    try {
+      const res = await fetch('/products');
+      allProducts = await res.json();
+      renderProducts(allProducts);
+    } catch {
+      document.getElementById('product-grid').innerHTML =
+        '<p style="color:#dc2626;">Failed to load products. Please refresh.</p>';
+    }
+  }
+
+  // ── cart ──────────────────────────────────────────────────────────────────────
   async function loadCart() {
     try {
       const res = await fetch('/cart', { headers: { 'Accept': 'application/json' } });
@@ -335,7 +324,7 @@
     }
     container.innerHTML = cart.map(item => `
       <div class="drawer-item">
-        <div class="drawer-item-info">
+        <div>
           <div class="drawer-item-name">${item.product_name}</div>
           <div class="drawer-item-price">£${(item.amount / 100).toFixed(2)} each</div>
         </div>
@@ -358,10 +347,7 @@
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
         body: JSON.stringify({ product_key: key, product_name: name, amount })
       });
-      if (res.status === 401) {
-        window.location.href = '/login?next=cart';
-        return;
-      }
+      if (res.status === 401) { window.location.href = '/login?next=cart'; return; }
       cart = await res.json();
       updateBadge();
       btn.textContent = '✓ Added';
@@ -399,13 +385,14 @@
         btn.disabled = false;
         btn.textContent = 'Checkout with Stripe';
       }
-    } catch (err) {
+    } catch {
       alert('Something went wrong. Please try again.');
       btn.disabled = false;
       btn.textContent = 'Checkout with Stripe';
     }
   }
 
+  loadProducts();
   loadCart();
 </script>
 

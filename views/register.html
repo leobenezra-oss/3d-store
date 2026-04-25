@@ -17,11 +17,13 @@
     .card .sub { color: #888; font-size: 0.9rem; margin-bottom: 2rem; }
     .notice { border-radius: 8px; padding: 0.75rem 1rem; font-size: 0.9rem; margin-bottom: 1.2rem; }
     .notice.error { background: #fff0f0; border: 1px solid #fca5a5; color: #dc2626; }
+    .notice.success { background: #f0fdf4; border: 1px solid #86efac; color: #166534; }
     label { display: block; font-size: 0.85rem; color: #666; margin-bottom: 0.4rem; }
     input { width: 100%; padding: 0.75rem 1rem; margin-bottom: 1.2rem; background: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; color: #111; font-size: 1rem; font-family: inherit; transition: border-color 0.2s; }
     input:focus { outline: none; border-color: #a78bfa; background: #fff; }
-    .btn { width: 100%; padding: 0.8rem; background: #a78bfa; color: #fff; border: none; border-radius: 8px; font-size: 1rem; font-weight: 700; cursor: pointer; margin-bottom: 1rem; transition: background 0.2s; }
+    .btn { width: 100%; padding: 0.8rem; background: #a78bfa; color: #fff; border: none; border-radius: 8px; font-size: 1rem; font-weight: 700; cursor: pointer; margin-bottom: 1rem; transition: background 0.2s; display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
     .btn:hover { background: #7c3aed; }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
     .divider { display: flex; align-items: center; gap: 0.75rem; color: #bbb; font-size: 0.85rem; margin-bottom: 1rem; }
     .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: #e0e0e0; }
     .google-btn { width: 100%; padding: 0.8rem; background: #fff; color: #111; border: 1px solid #ddd; border-radius: 8px; font-size: 0.95rem; font-weight: 600; cursor: pointer; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: center; gap: 0.6rem; font-family: inherit; transition: border-color 0.2s, box-shadow 0.2s; }
@@ -29,6 +31,18 @@
     .footer-link { text-align: center; color: #888; font-size: 0.9rem; }
     .footer-link a { color: #a78bfa; text-decoration: none; font-weight: 600; }
     .footer-link a:hover { text-decoration: underline; }
+    .spinner { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.5); border-top-color: #fff; border-radius: 50%; animation: spin 0.6s linear infinite; flex-shrink: 0; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    /* Verification pending state */
+    .verify-view { display: none; }
+    .verify-icon { font-size: 2.5rem; margin-bottom: 1rem; text-align: center; }
+    .verify-heading { font-size: 1.3rem; font-weight: 700; margin-bottom: 0.5rem; text-align: center; }
+    .verify-sub { color: #666; font-size: 0.9rem; text-align: center; margin-bottom: 1.5rem; }
+    .verify-sub strong { color: #111; }
+    .check-btn { width: 100%; padding: 0.8rem; background: #111; color: #fff; border: none; border-radius: 8px; font-size: 1rem; font-weight: 700; cursor: pointer; margin-bottom: 0.75rem; transition: background 0.2s; font-family: inherit; }
+    .check-btn:hover { background: #333; }
+    .resend-btn { width: 100%; padding: 0.75rem; background: transparent; color: #888; border: 1px solid #ddd; border-radius: 8px; font-size: 0.9rem; cursor: pointer; font-family: inherit; transition: border-color 0.2s; }
+    .resend-btn:hover { border-color: #a78bfa; color: #6d28d9; }
   </style>
 </head>
 <body>
@@ -42,30 +56,53 @@
   </nav>
   <div class="page">
     <div class="card">
-      <h1>Create account</h1>
-      <p class="sub">Join Fidget3D to start shopping</p>
-      <div id="notice" style="display:none" class="notice error"></div>
 
-      <label>Email address</label>
-      <input type="email" id="email" placeholder="you@example.com" />
-      <label>Password</label>
-      <input type="password" id="password" placeholder="Min. 8 characters" />
-      <button class="btn" onclick="emailRegister()">Create account</button>
+      <!-- ── Sign-up form ── -->
+      <div id="signup-view">
+        <h1>Create account</h1>
+        <p class="sub">Join Fidget3D to start shopping</p>
+        <div id="notice" style="display:none" class="notice error"></div>
 
-      <div class="divider">or</div>
+        <label>Email address</label>
+        <input type="email" id="email" placeholder="you@example.com" />
+        <label>Password</label>
+        <input type="password" id="password" placeholder="Min. 8 characters" />
+        <button class="btn" id="register-btn" onclick="emailRegister()">
+          <span id="btn-text">Create account</span>
+        </button>
 
-      <button class="google-btn" onclick="googleLogin()">
-        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/><path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z" fill="#34A853"/><path d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/><path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z" fill="#EA4335"/></svg>
-        Continue with Google
-      </button>
+        <div class="divider">or</div>
 
-      <p class="footer-link">Already have an account? <a href="/login">Log in</a></p>
+        <button class="google-btn" onclick="googleLogin()">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/><path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z" fill="#34A853"/><path d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/><path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z" fill="#EA4335"/></svg>
+          Continue with Google
+        </button>
+
+        <p class="footer-link">Already have an account? <a href="/login">Log in</a></p>
+      </div>
+
+      <!-- ── Email verification pending ── -->
+      <div id="verify-view" class="verify-view">
+        <div class="verify-icon">📬</div>
+        <div class="verify-heading">Check your email</div>
+        <p class="verify-sub">We sent a verification link to<br><strong id="verify-email"></strong></p>
+        <button class="check-btn" onclick="checkVerified()">I've verified — continue</button>
+        <button class="resend-btn" onclick="resendVerification()">Resend verification email</button>
+      </div>
+
     </div>
   </div>
 
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
-    import { getAuth, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+    import {
+      getAuth,
+      createUserWithEmailAndPassword,
+      GoogleAuthProvider,
+      signInWithPopup,
+      sendEmailVerification,
+      reload
+    } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
 
     const firebaseConfig = {
       apiKey: "AIzaSyCm5B5JqR7dee8y8DbLAU_5xRgsZCjpGFs",
@@ -79,42 +116,104 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
+    // Holds the newly-created (unverified) user so we can re-check / resend
+    let pendingUser = null;
+
+    // ── helpers ────────────────────────────────────────────────────────────────
+
     function showError(msg) {
       const notice = document.getElementById('notice');
       notice.textContent = msg;
       notice.style.display = 'block';
     }
 
-    async function createSession(user) {
-      const idToken = await user.getIdToken();
+    function setLoading(on) {
+      const btn = document.getElementById('register-btn');
+      const txt = document.getElementById('btn-text');
+      btn.disabled = on;
+      txt.innerHTML = on
+        ? 'Creating account\u2026 <div class="spinner"></div>'
+        : 'Create account';
+    }
+
+    function showVerifyScreen(email) {
+      document.getElementById('signup-view').style.display = 'none';
+      document.getElementById('verify-email').textContent = email;
+      document.getElementById('verify-view').style.display = 'block';
+    }
+
+    async function createServerSession(user) {
+      const idToken = await user.getIdToken(true);
       const res = await fetch('/auth/session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ idToken })
       });
-      if (res.ok) window.location.href = '/';
-      else showError('Something went wrong. Please try again.');
+      return res.ok;
     }
 
-    window.emailRegister = async function() {
-      const email = document.getElementById('email').value;
+    // ── email registration ─────────────────────────────────────────────────────
+
+    window.emailRegister = async function () {
+      const email = document.getElementById('email').value.trim();
       const password = document.getElementById('password').value;
       if (!email || !password) return showError('Please fill in all fields.');
       if (password.length < 8) return showError('Password must be at least 8 characters.');
+
+      setLoading(true);
       try {
         const cred = await createUserWithEmailAndPassword(auth, email, password);
-        await createSession(cred.user);
+        pendingUser = cred.user;
+
+        // Send verification email — user must click it before they can log in
+        await sendEmailVerification(cred.user);
+
+        // Sign out immediately so they can't bypass the verification check
+        await auth.signOut();
+
+        showVerifyScreen(email);
       } catch (err) {
-        if (err.code === 'auth/email-already-in-use') showError('That email is already registered. Try logging in.');
-        else showError('Registration failed. Please try again.');
+        setLoading(false);
+        if (err.code === 'auth/email-already-in-use') {
+          showError('That email is already registered. Try logging in.');
+        } else {
+          showError('Registration failed. Please try again.');
+        }
       }
     };
 
-    window.googleLogin = async function() {
+    // ── "I've verified" button ─────────────────────────────────────────────────
+    // We re-import signInWithEmailAndPassword lazily here to keep the module
+    // list at the top clean. Alternatively we could store creds, but that's
+    // less secure. Instead we redirect to /login so they sign in freshly.
+    window.checkVerified = function () {
+      // Simply send them to login — the login page will enforce verification check
+      window.location.href = '/login';
+    };
+
+    // ── resend verification ────────────────────────────────────────────────────
+    window.resendVerification = async function () {
+      // We need to temporarily sign in again to get a user object for sending
+      const email = document.getElementById('verify-email').textContent;
+      // Can't resend without a user object — prompt them to use login page's resend
+      // Instead we show instructions
+      const btn = document.querySelector('.resend-btn');
+      btn.textContent = 'Check your inbox or go to Log in to request a new link';
+      btn.disabled = true;
+    };
+
+    // ── Google sign-up (already verified by Google) ───────────────────────────
+
+    window.googleLogin = async function () {
       try {
         const provider = new GoogleAuthProvider();
         const cred = await signInWithPopup(auth, provider);
-        await createSession(cred.user);
+        const ok = await createServerSession(cred.user);
+        if (ok) {
+          window.location.href = '/';
+        } else {
+          showError('Something went wrong. Please try again.');
+        }
       } catch (err) {
         showError('Google sign-in failed. Please try again.');
       }

@@ -18,11 +18,13 @@
     .notice { border-radius: 8px; padding: 0.75rem 1rem; font-size: 0.9rem; margin-bottom: 1.2rem; }
     .notice.error { background: #fff0f0; border: 1px solid #fca5a5; color: #dc2626; }
     .notice.info { background: #f0f0ff; border: 1px solid #a78bfa; color: #6d28d9; }
+    .notice.warning { background: #fffbeb; border: 1px solid #fcd34d; color: #92400e; }
     label { display: block; font-size: 0.85rem; color: #666; margin-bottom: 0.4rem; }
     input { width: 100%; padding: 0.75rem 1rem; margin-bottom: 1.2rem; background: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; color: #111; font-size: 1rem; font-family: inherit; transition: border-color 0.2s; }
     input:focus { outline: none; border-color: #a78bfa; background: #fff; }
-    .btn { width: 100%; padding: 0.8rem; background: #a78bfa; color: #fff; border: none; border-radius: 8px; font-size: 1rem; font-weight: 700; cursor: pointer; margin-bottom: 1rem; transition: background 0.2s; }
+    .btn { width: 100%; padding: 0.8rem; background: #a78bfa; color: #fff; border: none; border-radius: 8px; font-size: 1rem; font-weight: 700; cursor: pointer; margin-bottom: 1rem; transition: background 0.2s; display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
     .btn:hover { background: #7c3aed; }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
     .divider { display: flex; align-items: center; gap: 0.75rem; color: #bbb; font-size: 0.85rem; margin-bottom: 1rem; }
     .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: #e0e0e0; }
     .google-btn { width: 100%; padding: 0.8rem; background: #fff; color: #111; border: 1px solid #ddd; border-radius: 8px; font-size: 0.95rem; font-weight: 600; cursor: pointer; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: center; gap: 0.6rem; font-family: inherit; transition: border-color 0.2s, box-shadow 0.2s; }
@@ -30,8 +32,10 @@
     .footer-link { text-align: center; color: #888; font-size: 0.9rem; }
     .footer-link a { color: #a78bfa; text-decoration: none; font-weight: 600; }
     .footer-link a:hover { text-decoration: underline; }
-    .spinner { display: none; width: 18px; height: 18px; border: 2px solid #fff; border-top-color: transparent; border-radius: 50%; animation: spin 0.6s linear infinite; margin: 0 auto; }
+    .spinner { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.5); border-top-color: #fff; border-radius: 50%; animation: spin 0.6s linear infinite; flex-shrink: 0; }
     @keyframes spin { to { transform: rotate(360deg); } }
+    .resend-link { background: none; border: none; color: #92400e; text-decoration: underline; cursor: pointer; font-size: inherit; padding: 0; font-family: inherit; }
+    .resend-link:hover { color: #78350f; }
   </style>
 </head>
 <body>
@@ -53,9 +57,8 @@
       <input type="email" id="email" placeholder="you@example.com" />
       <label>Password</label>
       <input type="password" id="password" placeholder="••••••••" />
-      <button class="btn" onclick="emailLogin()">
+      <button class="btn" id="login-btn" onclick="emailLogin()">
         <span id="btn-text">Log in</span>
-        <div class="spinner" id="spinner"></div>
       </button>
 
       <div class="divider">or</div>
@@ -71,7 +74,7 @@
 
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
-    import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+    import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, sendEmailVerification } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
 
     const firebaseConfig = {
       apiKey: "AIzaSyCm5B5JqR7dee8y8DbLAU_5xRgsZCjpGFs",
@@ -87,66 +90,126 @@
 
     const params = new URLSearchParams(window.location.search);
     const notice = document.getElementById('notice');
+    const loginBtn = document.getElementById('login-btn');
+    const btnText = document.getElementById('btn-text');
+
     if (params.get('next') === 'cart') {
-      notice.textContent = '👋 Log in to add items to your cart.';
-      notice.className = 'notice info';
+      showNotice('info', '👋 Log in to add items to your cart.');
+    }
+
+    // ── helpers ────────────────────────────────────────────────────────────────
+
+    function showNotice(type, html) {
+      notice.innerHTML = html;
+      notice.className = 'notice ' + type;
       notice.style.display = 'block';
     }
 
-    // FIXED: Create server session after login
+    function setLoading(on) {
+      loginBtn.disabled = on;
+      if (on) {
+        btnText.innerHTML = 'Logging in\u2026 <div class="spinner"></div>';
+      } else {
+        btnText.textContent = 'Log in';
+      }
+    }
+
+    // Creates the Express server session from a verified Firebase user.
     async function createServerSession(user) {
-      const idToken = await user.getIdToken();
+      const idToken = await user.getIdToken(true); // forceRefresh ensures fresh token
       const res = await fetch('/auth/session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ idToken })
       });
-      if (!res.ok) throw new Error('Session creation failed');
+      return res.ok;
     }
 
-    function showError(msg) {
-      notice.textContent = msg;
-      notice.className = 'notice error';
-      notice.style.display = 'block';
-      document.getElementById('btn-text').style.display = 'inline';
-      document.getElementById('spinner').style.display = 'none';
+    function getRedirectTarget() {
+      const next = params.get('next');
+      return next ? '/' + next : '/';
     }
 
-    window.emailLogin = async function() {
-      const email = document.getElementById('email').value;
+    // ── already-logged-in check (server-side) ──────────────────────────────────
+    // Ask the server if a session already exists. If yes, redirect immediately.
+    // This avoids the old onAuthStateChanged race condition where Firebase would
+    // fire before the session cookie was written, causing "something failed".
+    (async () => {
+      try {
+        const me = await fetch('/auth/me');
+        if (me.ok) {
+          window.location.href = getRedirectTarget();
+        }
+      } catch (_) { /* network error — stay on page */ }
+    })();
+
+    // ── email / password login ─────────────────────────────────────────────────
+
+    window.emailLogin = async function () {
+      const email = document.getElementById('email').value.trim();
       const password = document.getElementById('password').value;
-      if (!email || !password) return showError('Please fill in all fields.');
-      document.getElementById('btn-text').style.display = 'none';
-      document.getElementById('spinner').style.display = 'block';
+      if (!email || !password) return showNotice('error', 'Please fill in all fields.');
+
+      setLoading(true);
       try {
         const cred = await signInWithEmailAndPassword(auth, email, password);
-        await createServerSession(cred.user);
-        const redirectTo = params.get('next') || '/';
-        window.location.href = redirectTo;
+
+        // Block unverified email addresses
+        if (!cred.user.emailVerified) {
+          await auth.signOut();
+          showNotice('warning',
+            'Please verify your email before logging in. ' +
+            '<button class="resend-link" id="resend-btn">Resend verification email</button>'
+          );
+          document.getElementById('resend-btn').addEventListener('click', async () => {
+            const reCred = await signInWithEmailAndPassword(auth, email, password).catch(() => null);
+            if (reCred) {
+              await sendEmailVerification(reCred.user);
+              await auth.signOut();
+              showNotice('info', '\u2705 Verification email resent \u2014 check your inbox.');
+            }
+          });
+          setLoading(false);
+          return;
+        }
+
+        const ok = await createServerSession(cred.user);
+        if (!ok) throw new Error('session_failed');
+        window.location.href = getRedirectTarget();
       } catch (err) {
-        showError('Incorrect email or password.');
+        setLoading(false);
+        if (err.message === 'session_failed') {
+          showNotice('error', 'Login succeeded but session setup failed. Please try again.');
+        } else if (
+          err.code === 'auth/invalid-credential' ||
+          err.code === 'auth/wrong-password' ||
+          err.code === 'auth/user-not-found'
+        ) {
+          showNotice('error', 'Incorrect email or password.');
+        } else {
+          showNotice('error', 'Login failed. Please try again.');
+        }
       }
     };
 
-    window.googleLogin = async function() {
+    // ── Google login ───────────────────────────────────────────────────────────
+
+    window.googleLogin = async function () {
       try {
         const provider = new GoogleAuthProvider();
         const cred = await signInWithPopup(auth, provider);
-        await createServerSession(cred.user);
-        const redirectTo = params.get('next') || '/';
-        window.location.href = redirectTo;
+        // Google accounts are inherently verified
+        const ok = await createServerSession(cred.user);
+        if (!ok) throw new Error('session_failed');
+        window.location.href = getRedirectTarget();
       } catch (err) {
-        showError('Google sign-in failed. Please try again.');
+        if (err.message === 'session_failed') {
+          showNotice('error', 'Sign-in succeeded but session setup failed. Please try again.');
+        } else if (err.code !== 'auth/popup-closed-by-user') {
+          showNotice('error', 'Google sign-in failed. Please try again.');
+        }
       }
     };
-
-    // Redirect if already logged in
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        const redirectTo = params.get('next') || '/';
-        window.location.href = redirectTo;
-      }
-    });
   </script>
 </body>
 </html>

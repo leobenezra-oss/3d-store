@@ -3,7 +3,7 @@ const express = require('express');
 const session = require('express-session');
 const pgSession = require('connect-pg-simple')(session);
 const path = require('path');
-const pool = require('./db'); // Your database connection
+const pool = require('./db');
 
 const app = express();
 
@@ -11,20 +11,19 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// ✅ FIXED: Session with PostgreSQL store
 app.use(session({
   store: new pgSession({
-    pool: pool,              // Your database pool from db.js
-    tableName: 'session',    // Creates this table automatically
+    pool: pool,
+    tableName: 'session',
     createTableIfMissing: true
   }),
   secret: process.env.SESSION_SECRET || 'change-this-to-a-secret-key',
   resave: false,
   saveUninitialized: false,
-  cookie: { 
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  cookie: {
+    maxAge: 7 * 24 * 60 * 60 * 1000,
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production', // true only on HTTPS
+    secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax'
   }
 }));
@@ -39,6 +38,16 @@ app.use('/cart', require('./routes/cart'));
 
 app.get('/login', (req, res) => res.sendFile(path.join(__dirname, 'views', 'login.html')));
 app.get('/register', (req, res) => res.sendFile(path.join(__dirname, 'views', 'register.html')));
+
+// Admin page — server checks session, client checks role
+app.get('/admin', (req, res) => {
+  const adminEmails = (process.env.ADMIN_EMAILS || '').split(',').map(e => e.trim().toLowerCase());
+  const userEmail = req.session?.user?.email?.toLowerCase();
+  if (!userEmail || !adminEmails.includes(userEmail)) {
+    return res.redirect('/login');
+  }
+  res.sendFile(path.join(__dirname, 'views', 'admin.html'));
+});
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'views', 'index.html'));

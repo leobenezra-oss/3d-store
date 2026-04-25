@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — Fidget3D</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', sans-serif; background: #f5f5f5; color: #111; min-height: 100vh; }
+    nav { display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; background: #111; color: #fff; }
+    nav .brand { font-weight: 800; font-size: 1rem; letter-spacing: 0.02em; display: flex; align-items: center; gap: 0.6rem; }
+    nav .brand span { background: #7c3aed; padding: 0.2rem 0.6rem; border-radius: 6px; font-size: 0.75rem; letter-spacing: 0.08em; }
+    nav a { color: #aaa; text-decoration: none; font-size: 0.9rem; }
+    nav a:hover { color: #fff; }
+
+    .page { max-width: 1100px; margin: 0 auto; padding: 2rem; }
+    .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
+    .page-header h1 { font-size: 1.5rem; }
+    .page-header p { color: #777; font-size: 0.9rem; margin-top: 0.2rem; }
+
+    /* STATS ROW */
+    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+    .stat { background: #fff; border: 1px solid #e5e5e5; border-radius: 12px; padding: 1.25rem 1.5rem; }
+    .stat-value { font-size: 2rem; font-weight: 800; color: #7c3aed; }
+    .stat-label { font-size: 0.82rem; color: #888; margin-top: 0.25rem; }
+
+    /* ADD PRODUCT */
+    .add-section { background: #fff; border: 1px solid #e5e5e5; border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; }
+    .add-section h2 { font-size: 1rem; font-weight: 700; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem; }
+    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.85rem; }
+    .form-grid .full { grid-column: 1 / -1; }
+    label { display: block; font-size: 0.8rem; color: #666; margin-bottom: 0.3rem; font-weight: 600; }
+    input, textarea { width: 100%; padding: 0.65rem 0.9rem; background: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; color: #111; font-size: 0.9rem; font-family: inherit; transition: border-color 0.2s; }
+    input:focus, textarea:focus { outline: none; border-color: #a78bfa; background: #fff; }
+    textarea { resize: vertical; min-height: 70px; }
+    .btn-add { background: #7c3aed; color: #fff; border: none; padding: 0.7rem 1.5rem; border-radius: 8px; font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: background 0.2s; font-family: inherit; }
+    .btn-add:hover { background: #6d28d9; }
+    .btn-add:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* PRODUCT TABLE */
+    .table-section { background: #fff; border: 1px solid #e5e5e5; border-radius: 12px; overflow: hidden; }
+    .table-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; }
+    .table-header h2 { font-size: 1rem; font-weight: 700; }
+    .search-box { padding: 0.5rem 0.9rem; border: 1px solid #ddd; border-radius: 8px; font-size: 0.88rem; font-family: inherit; width: 220px; }
+    .search-box:focus { outline: none; border-color: #a78bfa; }
+
+    table { width: 100%; border-collapse: collapse; }
+    thead th { background: #fafafa; padding: 0.75rem 1rem; text-align: left; font-size: 0.78rem; color: #888; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; border-bottom: 1px solid #f0f0f0; }
+    tbody tr { border-bottom: 1px solid #f5f5f5; transition: background 0.15s; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: #fafafa; }
+    td { padding: 0.85rem 1rem; font-size: 0.88rem; vertical-align: middle; }
+    .td-img { width: 52px; height: 52px; object-fit: cover; border-radius: 8px; background: #f3f3f3; }
+    .td-name { font-weight: 700; margin-bottom: 0.15rem; }
+    .td-key { font-size: 0.75rem; color: #aaa; font-family: monospace; }
+    .td-price { font-weight: 700; color: #7c3aed; }
+
+    /* STOCK EDITOR */
+    .stock-cell { display: flex; align-items: center; gap: 0.5rem; }
+    .stock-input { width: 64px; padding: 0.4rem 0.6rem; border: 1px solid #ddd; border-radius: 6px; font-size: 0.88rem; text-align: center; font-family: inherit; }
+    .stock-input:focus { outline: none; border-color: #a78bfa; }
+    .badge { font-size: 0.72rem; font-weight: 700; padding: 0.18rem 0.55rem; border-radius: 999px; white-space: nowrap; }
+    .badge-ok { background: #f0fdf4; color: #16a34a; border: 1px solid #86efac; }
+    .badge-low { background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa; }
+    .badge-last { background: #fef2f2; color: #dc2626; border: 1px solid #fca5a5; }
+    .badge-out { background: #f3f4f6; color: #6b7280; border: 1px solid #e5e7eb; }
+
+    /* TOGGLE */
+    .toggle { position: relative; display: inline-block; width: 40px; height: 22px; flex-shrink: 0; }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider { position: absolute; cursor: pointer; inset: 0; background: #d1d5db; border-radius: 22px; transition: background 0.2s; }
+    .toggle-slider::before { content: ''; position: absolute; width: 16px; height: 16px; left: 3px; bottom: 3px; background: #fff; border-radius: 50%; transition: transform 0.2s; }
+    .toggle input:checked + .toggle-slider { background: #7c3aed; }
+    .toggle input:checked + .toggle-slider::before { transform: translateX(18px); }
+
+    /* SAVE / DELETE BUTTONS */
+    .btn-save { background: #111; color: #fff; border: none; padding: 0.4rem 0.9rem; border-radius: 6px; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: background 0.2s; font-family: inherit; white-space: nowrap; }
+    .btn-save:hover { background: #333; }
+    .btn-save.saved { background: #16a34a; }
+    .btn-delete { background: none; border: 1px solid #fca5a5; color: #dc2626; padding: 0.4rem 0.75rem; border-radius: 6px; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: all 0.2s; font-family: inherit; }
+    .btn-delete:hover { background: #fef2f2; }
+
+    /* TOAST */
+    .toast { position: fixed; bottom: 1.5rem; right: 1.5rem; background: #111; color: #fff; padding: 0.75rem 1.25rem; border-radius: 10px; font-size: 0.88rem; font-weight: 600; opacity: 0; transform: translateY(8px); transition: opacity 0.25s, transform 0.25s; pointer-events: none; z-index: 999; }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .toast.error { background: #dc2626; }
+
+    .loading { text-align: center; padding: 3rem; color: #aaa; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="brand">Fidget3D <span>ADMIN</span></div>
+  <a href="/">← Back to store</a>
+</nav>
+
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1>Product Manager</h1>
+      <p>Manage stock levels and visibility for all products</p>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats" id="stats-row">
+    <div class="stat"><div class="stat-value" id="stat-total">—</div><div class="stat-label">Total products</div></div>
+    <div class="stat"><div class="stat-value" id="stat-active">—</div><div class="stat-label">Live / visible</div></div>
+    <div class="stat"><div class="stat-value" id="stat-low">—</div><div class="stat-label">Low stock (≤3)</div></div>
+    <div class="stat"><div class="stat-value" id="stat-out">—</div><div class="stat-label">Out of stock</div></div>
+  </div>
+
+  <!-- Add product -->
+  <div class="add-section">
+    <h2>➕ Add New Product</h2>
+    <div class="form-grid">
+      <div>
+        <label>Product key (unique slug)</label>
+        <input type="text" id="add-key" placeholder="e.g. dragon-fidget" />
+      </div>
+      <div>
+        <label>Name</label>
+        <input type="text" id="add-name" placeholder="e.g. Dragon Fidget" />
+      </div>
+      <div>
+        <label>Price (pence) — e.g. 699 = £6.99</label>
+        <input type="number" id="add-price" placeholder="699" min="1" />
+      </div>
+      <div>
+        <label>Initial stock</label>
+        <input type="number" id="add-stock" placeholder="10" min="0" />
+      </div>
+      <div class="full">
+        <label>Description</label>
+        <textarea id="add-desc" placeholder="Short product description shown on the store..."></textarea>
+      </div>
+      <div class="full">
+        <label>Image URL (or /filename.jpg for local files in /public)</label>
+        <input type="text" id="add-image" placeholder="https://... or /MyProduct.jpg" />
+      </div>
+    </div>
+    <div style="margin-top:1rem">
+      <button class="btn-add" id="add-btn" onclick="addProduct()">Add Product</button>
+    </div>
+  </div>
+
+  <!-- Product table -->
+  <div class="table-section">
+    <div class="table-header">
+      <h2>All Products</h2>
+      <input class="search-box" type="text" placeholder="Search products…" oninput="filterTable(this.value)" />
+    </div>
+    <div id="table-wrap">
+      <div class="loading">Loading products…</div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  let products = [];
+
+  function stockBadge(stock, inStock) {
+    if (!inStock || stock === 0) return '<span class="badge badge-out">Out of stock</span>';
+    if (stock === 1) return '<span class="badge badge-last">🔴 Last one!</span>';
+    if (stock <= 3) return '<span class="badge badge-low">Only ' + stock + ' left</span>';
+    return '<span class="badge badge-ok">In stock</span>';
+  }
+
+  function updateStats(prods) {
+    document.getElementById('stat-total').textContent = prods.length;
+    document.getElementById('stat-active').textContent = prods.filter(p => p.in_stock && p.stock > 0).length;
+    document.getElementById('stat-low').textContent = prods.filter(p => p.stock > 0 && p.stock <= 3).length;
+    document.getElementById('stat-out').textContent = prods.filter(p => !p.in_stock || p.stock === 0).length;
+  }
+
+  function renderTable(prods) {
+    const wrap = document.getElementById('table-wrap');
+    if (!prods.length) {
+      wrap.innerHTML = '<div class="loading">No products found.</div>';
+      return;
+    }
+    wrap.innerHTML = `
+      <table>
+        <thead>
+          <tr>
+            <th>Image</th>
+            <th>Product</th>
+            <th>Price</th>
+            <th>Stock</th>
+            <th>Status</th>
+            <th>Visible</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${prods.map(p => `
+            <tr id="row-${p.id}">
+              <td><img class="td-img" src="${p.image}" alt="${p.name}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2252%22 height=%2252%22><rect width=%2252%22 height=%2252%22 fill=%22%23f0f0f0%22/></svg>'"></td>
+              <td>
+                <div class="td-name">${p.name}</div>
+                <div class="td-key">${p.key}</div>
+              </td>
+              <td class="td-price">£${(p.price_pence / 100).toFixed(2)}</td>
+              <td>
+                <div class="stock-cell">
+                  <input class="stock-input" type="number" min="0" value="${p.stock}" id="stock-${p.id}" onchange="stockChanged(${p.id})">
+                </div>
+              </td>
+              <td id="badge-${p.id}">${stockBadge(p.stock, p.in_stock)}</td>
+              <td>
+                <label class="toggle" title="${p.in_stock ? 'Visible on store' : 'Hidden from store'}">
+                  <input type="checkbox" id="toggle-${p.id}" ${p.in_stock ? 'checked' : ''} onchange="toggleChanged(${p.id})">
+                  <span class="toggle-slider"></span>
+                </label>
+              </td>
+              <td>
+                <div style="display:flex;gap:0.4rem;flex-wrap:wrap">
+                  <button class="btn-save" id="save-${p.id}" onclick="saveProduct(${p.id})">Save</button>
+                  <button class="btn-delete" onclick="deleteProduct(${p.id}, '${p.name.replace(/'/g, "\\'")}')">Delete</button>
+                </div>
+              </td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    `;
+  }
+
+  function stockChanged(id) {
+    const stock = parseInt(document.getElementById('stock-' + id).value) || 0;
+    const inStock = document.getElementById('toggle-' + id).checked;
+    document.getElementById('badge-' + id).innerHTML = stockBadge(stock, inStock);
+  }
+
+  function toggleChanged(id) {
+    const stock = parseInt(document.getElementById('stock-' + id).value) || 0;
+    const inStock = document.getElementById('toggle-' + id).checked;
+    document.getElementById('badge-' + id).innerHTML = stockBadge(stock, inStock);
+  }
+
+  async function saveProduct(id) {
+    const stock = parseInt(document.getElementById('stock-' + id).value) || 0;
+    const inStock = document.getElementById('toggle-' + id).checked;
+    const btn = document.getElementById('save-' + id);
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+    try {
+      const res = await fetch('/products/admin/update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, stock, in_stock: inStock })
+      });
+      if (!res.ok) throw new Error();
+      btn.textContent = '✓ Saved';
+      btn.classList.add('saved');
+      // update local data
+      const p = products.find(x => x.id === id);
+      if (p) { p.stock = stock; p.in_stock = inStock; }
+      updateStats(products);
+      showToast('Saved!');
+      setTimeout(() => { btn.textContent = 'Save'; btn.classList.remove('saved'); btn.disabled = false; }, 2000);
+    } catch {
+      showToast('Save failed — please try again.', true);
+      btn.textContent = 'Save';
+      btn.disabled = false;
+    }
+  }
+
+  async function deleteProduct(id, name) {
+    if (!confirm('Delete "' + name + '"? This cannot be undone.')) return;
+    try {
+      const res = await fetch('/products/admin/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id })
+      });
+      if (!res.ok) throw new Error();
+      products = products.filter(p => p.id !== id);
+      renderTable(products);
+      updateStats(products);
+      showToast('"' + name + '" deleted.');
+    } catch {
+      showToast('Delete failed.', true);
+    }
+  }
+
+  async function addProduct() {
+    const key = document.getElementById('add-key').value.trim();
+    const name = document.getElementById('add-name').value.trim();
+    const price_pence = parseInt(document.getElementById('add-price').value);
+    const stock = parseInt(document.getElementById('add-stock').value) || 0;
+    const description = document.getElementById('add-desc').value.trim();
+    const image = document.getElementById('add-image').value.trim();
+
+    if (!key || !name || !price_pence) return showToast('Key, name and price are required.', true);
+
+    const btn = document.getElementById('add-btn');
+    btn.disabled = true;
+    btn.textContent = 'Adding…';
+
+    try {
+      const res = await fetch('/products/admin/add', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ key, name, description, price_pence, image, stock })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed');
+      products.push(data);
+      renderTable(products);
+      updateStats(products);
+      showToast('"' + name + '" added!');
+      // clear form
+      ['add-key','add-name','add-price','add-stock','add-desc','add-image'].forEach(id => {
+        document.getElementById(id).value = '';
+      });
+    } catch (err) {
+      showToast(err.message || 'Failed to add product.', true);
+    }
+    btn.disabled = false;
+    btn.textContent = 'Add Product';
+  }
+
+  function filterTable(query) {
+    const q = query.toLowerCase();
+    const filtered = products.filter(p =>
+      p.name.toLowerCase().includes(q) || p.key.toLowerCase().includes(q)
+    );
+    renderTable(filtered);
+  }
+
+  function showToast(msg, error = false) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast show' + (error ? ' error' : '');
+    setTimeout(() => { t.className = 'toast'; }, 2800);
+  }
+
+  async function init() {
+    try {
+      const res = await fetch('/products/admin/all');
+      if (res.status === 403) {
+        document.querySelector('.page').innerHTML =
+          '<div style="text-align:center;padding:4rem;color:#dc2626"><h2>Access denied</h2><p style="margin-top:0.5rem">You are not authorised to view this page.</p></div>';
+        return;
+      }
+      products = await res.json();
+      renderTable(products);
+      updateStats(products);
+    } catch {
+      document.getElementById('table-wrap').innerHTML =
+        '<div class="loading" style="color:#dc2626">Failed to load products.</div>';
+    }
+  }
+
+  init();
+</script>
+</body>
+</html>
