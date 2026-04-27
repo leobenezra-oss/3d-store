@@ -178,7 +178,6 @@ async function setup() {
   }
 
   console.log(`Seeded ${products.length} products (skipped any already existing).`);
-  process.exit();
 }
 
 setup().catch(e => { console.error(e); process.exit(1); });
